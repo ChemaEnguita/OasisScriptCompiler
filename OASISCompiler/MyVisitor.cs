@@ -37,6 +37,9 @@ namespace OASISCompiler
          * is not defined somewhere after the first pass */
         public Dictionary<string, bool> codeLabels = new Dictionary<string, bool>();
 
+        /* And another one for exported symbols (used in dialog options inside scripts, for instance) */
+        public Dictionary<string, bool> globalCodeLabels = new Dictionary<string, bool>();
+
         /* We keep lists of functions and commands with the types and number of commands, associated
          * macro label and return value type. I did not put that in the grammar as tokens to simplify
          * it and also being easily expandable/amendable */
@@ -61,6 +64,9 @@ namespace OASISCompiler
 
             codeLabels = new Dictionary<string, bool>();
             codeLabels.Clear();
+
+            globalCodeLabels = new Dictionary<string, bool>();
+            globalCodeLabels.Clear();
 
             // Output a header
             OutputCode(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
@@ -124,6 +130,9 @@ namespace OASISCompiler
  
             OutputCode(".byt " + id);
             OutputCode("res_start", 0);
+
+            // For exporting symbols
+            OutputCode("+script_" + id + "_start", 0);
 
             // Parse the content of the script
             Visit(context.block());
@@ -274,12 +283,26 @@ namespace OASISCompiler
         {
             bool t;
             string name = context.IDENT().GetText();
-            if (codeLabels.TryGetValue(name, out t))
-                codeLabels.Remove(name);
-            codeLabels.Add(name, true);
 
-            OutputCode("l_" + name, 0); // Labels will appear with a preceding l_ to avoid collisions
+            // META: This code is not correct, as labels which are redefined will probably overlap, both if
+            // local or one local another global or two globals....
+            // Will issue an assembler error, though.
+            if (context.e != null)
+            {
+                if (globalCodeLabels.TryGetValue(name, out t))
+                    globalCodeLabels.Remove(name);
+                globalCodeLabels.Add(name, true);
 
+                OutputCode("+l_" + name, 0); // Labels will appear with a preceding +l_ to avoid collisions
+            }
+            else
+            {
+                if (codeLabels.TryGetValue(name, out t))
+                    codeLabels.Remove(name);
+                codeLabels.Add(name, true);
+
+                OutputCode("l_" + name, 0); // Labels will appear with a preceding l_ to avoid collisions
+            }
             return base.VisitLabel(context);
         }
 
@@ -908,6 +931,59 @@ namespace OASISCompiler
             OutputCode(".)", 0);
 
             return Symbol.Types.None; 
+        }
+
+        public override Symbol.Types VisitDialogMain([NotNull] OASISGrammarParser.DialogMainContext context)
+        {
+            int id;
+            int pos;
+
+            // Check the id is valid
+            if ((!int.TryParse(context.NUMBER(0).GetText(), out id)) || (id > 255))
+                Error("Invalid Object ID", context.Start.Line, context.GetText());
+
+            // Ouput header
+            OutputCode("", 0);
+            OutputCode("; Dialog " + id, 0);
+            OutputCode(".(", 0);
+            if (id >= 200)
+                OutputCode(".byt RESOURCE_DIALOG|$80", 0);
+            else
+                OutputCode(".byt RESOURCE_DIALOG", 0);
+
+            OutputCode(".word (res_end-res_start +4)", 0);
+
+            OutputCode(".byt " + id);
+            OutputCode("res_start", 0);
+
+            // Stringpack and script id
+            OutputCode(".byt " + context.st.Text + "\t; Stringpack with options",1);
+            OutputCode(".byt " + context.s.Text + "\t; Script with response actions",1);
+
+            // Save current position and parse options
+            pos = generatedCode.Count();
+
+            base.VisitDialogMain(context);
+
+            // Insert the list of active options ending in $ff and the list of word offsets
+            // stored in the corresponding lists member variables
+
+            //generatedCode.Insert(pos, ".byt $ff ; End of response table");
+            //totalSize++;
+
+            OutputCode("res_end", 0);
+            OutputCode(".)", 0);
+
+            return Symbol.Types.None;
+
+        }
+
+        public override Symbol.Types VisitDialogOption([NotNull] OASISGrammarParser.DialogOptionContext context)
+        {
+            //return base.VisitDialogOption(context);
+
+            OutputCode("; One option here", 0);
+            return Symbol.Types.None;
         }
     }
 }

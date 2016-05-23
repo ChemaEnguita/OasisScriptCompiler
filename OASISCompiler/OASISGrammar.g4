@@ -15,10 +15,17 @@ grammar OASISGrammar;
  * Parser Rules
  */
  
-program: global* (script|objectcode|stringpack)+  ;
+program: global* (script|objectcode|stringpack|dialogr)+  ;
 
 global:
 	t=('bool'|'byte') IDENT ('as' NUMBER)? ';' # GlobalDeclare
+	;
+
+dialogr: 'dialog' NUMBER ':' 'script' s=NUMBER 'stringpack' st=NUMBER '{' dlgoption (';' dlgoption)* ';'? '}' #DialogMain
+	;
+
+dlgoption:
+	'option' o=NUMBER a=('active'|'inactive') '->' l=IDENT		#DialogOption
 	;
 
 stringpack: 'stringpack' NUMBER '{' STRING (';' STRING)* ';'? '}'	#StringpackMain
@@ -38,7 +45,7 @@ declaration:
 	;
 
 statement 
-    :   IDENT ':' statement										# Label
+    :   e='export'? IDENT ':' statement							# Label
 	|	assignment ';'											# TopAssignmentStatement
     |   block													# ABlock
     |   'if' '(' logicalexpression ')' statement ('else' statement)?	# IfStatement

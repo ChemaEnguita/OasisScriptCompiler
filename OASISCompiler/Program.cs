@@ -21,6 +21,7 @@ namespace OASISCompiler
 
         static void Main(string[] args)
         {
+            int UndefinedSymbols = 0;
             StreamReader inputStream = new StreamReader(Console.OpenStandardInput());
             //string inputStream = "script 203{ bool t; byte a; byte b; byte c; a=3; t=true; t=false; t=a>1; if (t){ a=f1(a); b=f2();} else c=100; while (a!=7) { b=b+1; f3(a,b,c);} lab1: proc(); }";
             //string inputStream = "script 203{ byte a;if(true) a=2; if(true){a=1;} else {a=0;} }";
@@ -49,9 +50,20 @@ namespace OASISCompiler
                 Console.WriteLine(visitor.generatedCode[i]);
             }
 
+            // Check for undefined global labels
+            foreach (KeyValuePair<string, bool> entry in visitor.globalCodeLabels)
+            {
+                if (!entry.Value)
+                {
+                    Console.Error.WriteLine("Undefined gloabl label " + entry.Key);
+                    UndefinedSymbols++;
+                }
+            }
+
             Console.Error.WriteLine("=============");
             Console.Error.WriteLine("Syntax Errors: " + err.nErrors);
             Console.Error.WriteLine("Semantic errors: " + visitor.nErrors);
+            Console.Error.WriteLine("Undefined symbols:" + UndefinedSymbols);
             Console.Error.WriteLine("Script bytecode size is: " + (visitor.totalSize) + " bytes");
 
             //system("PAUSE");
