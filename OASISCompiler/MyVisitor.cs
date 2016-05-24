@@ -46,11 +46,21 @@ namespace OASISCompiler
         public OASISFunctions theFunctions;
         public OASISCommands theCommands;
 
+        /* We need a data structure to hold all the information while processing dialog options.
+         * a list of structures will do the job */
+        public struct DlgEntry
+        {
+            public String labelOffset;
+            public bool active;
+        };
+
+        public List<DlgEntry> theDlgOptions;
+
         // Constructor
         public MyVisitor() {
             /* Some basic initializaitons. Local symbols start at 200
              * as #defined in the OASIS sources */
-            localSymbols =new SymbolTable();
+            localSymbols = new SymbolTable();
             localSymbols.firstaddrB = 200;
             localSymbols.firstaddrL = 200;
 
@@ -67,6 +77,9 @@ namespace OASISCompiler
 
             globalCodeLabels = new Dictionary<string, bool>();
             globalCodeLabels.Clear();
+
+            theDlgOptions = new List<DlgEntry>();
+            theDlgOptions.Clear();
 
             // Output a header
             OutputCode(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
@@ -90,18 +103,18 @@ namespace OASISCompiler
 
         /* Stores the string in the code list increasing the
          byte offset by the number specified as parameter */
-        public void OutputCode(string s, int nbytes=0)
+        public void OutputCode(string s, int nbytes = 0)
         {
-           // generatedCode.Add(byteOffset+": "+s);
+            // generatedCode.Add(byteOffset+": "+s);
             generatedCode.Add(s);
             byteOffset += nbytes;
         }
 
         /* Errors produced by the semantic checker */
-        public void Error(string s, int line, string c="")
+        public void Error(string s, int line, string c = "")
         {
             if (line >= 0)
-                Console.Error.WriteLine("Error " + s + " in line: " + line+": "+c);
+                Console.Error.WriteLine("Error " + s + " in line: " + line + ": " + c);
             else
                 Console.Error.WriteLine("Error " + s + ": " + s);
             nErrors++;
@@ -114,20 +127,20 @@ namespace OASISCompiler
 
             // Try to parse the script number
             if ((!int.TryParse(context.NUMBER().GetText(), out id)) || (id > 255))
-                Error("Invalid Script ID", context.Start.Line,context.GetText());
+                Error("Invalid Script ID", context.Start.Line, context.GetText());
 
             byteOffset = 0;
             OutputCode("", 0);
-            OutputCode("; Script " + id, 0);            
+            OutputCode("; Script " + id, 0);
             OutputCode(".(", 0);
 
-            if(id>=200)
+            if (id >= 200)
                 OutputCode(".byt RESOURCE_SCRIPT|$80", 0);
             else
                 OutputCode(".byt RESOURCE_SCRIPT", 0);
 
             OutputCode(".word (res_end-res_start +4)", 0);
- 
+
             OutputCode(".byt " + id);
             OutputCode("res_start", 0);
 
@@ -145,9 +158,9 @@ namespace OASISCompiler
             // Check for undefined labels
             foreach (KeyValuePair<string, bool> entry in codeLabels)
             {
-                if(!entry.Value)
+                if (!entry.Value)
                 {
-                    Error("Undefined label " + entry.Key + " in script "+id, -1, context.GetText());
+                    Error("Undefined label " + entry.Key + " in script " + id, -1, context.GetText());
                 }
             }
 
@@ -181,7 +194,7 @@ namespace OASISCompiler
             {
                 // A fixed address has been given to this var...
                 bool res = int.TryParse(context.NUMBER().GetText(), out Addr);
-                
+
                 // Check if it is valid
                 if (res && (Addr < 256))
                 {
@@ -246,7 +259,7 @@ namespace OASISCompiler
             }
 
             s = localSymbols.resolve(name);
-            if(s!=null)
+            if (s != null)
             {
                 Error("Redefined variable", line, name);
                 return true;
@@ -258,7 +271,7 @@ namespace OASISCompiler
         public override Symbol.Types VisitDeclare([NotNull] OASISGrammarParser.DeclareContext context)
         {
 
-            Symbol sym=new Symbol();
+            Symbol sym = new Symbol();
 
             sym.Name = context.IDENT().GetText();
             switch (context.t.Type)
@@ -273,9 +286,9 @@ namespace OASISCompiler
                     break;
             }
 
-            if(!symbolExists(sym.Name, context.Start.Line))
+            if (!symbolExists(sym.Name, context.Start.Line))
                 localSymbols.define(sym);
-  
+
             return base.VisitDeclare(context);
         }
 
@@ -310,8 +323,8 @@ namespace OASISCompiler
         {
             int val; int b;
 
-            if ((int.TryParse(context.GetText(), out val)) && (val<=256))
-                OutputCode(".byt "+EncodeNumber(val, out b),b);
+            if ((int.TryParse(context.GetText(), out val)) && (val <= 256))
+                OutputCode(".byt " + EncodeNumber(val, out b), b);
             else
                 Error("Invalid constant", context.Start.Line, context.GetText());
 
@@ -356,12 +369,12 @@ namespace OASISCompiler
 
             int b;
 
-            if (sym==null)
+            if (sym == null)
             {
                 Error("Variable not found:" + context.GetText(), context.Start.Line, context.GetText());
                 return base.VisitIdentifier(context);
             }
-            OutputCode(".byt SF_GETVAL," + EncodeNumber(sym.Address, out b) + "\t; " + context.GetText(), b+1);
+            OutputCode(".byt SF_GETVAL," + EncodeNumber(sym.Address, out b) + "\t; " + context.GetText(), b + 1);
             base.VisitIdentifier(context);
             return sym.Type;
         }
@@ -383,9 +396,9 @@ namespace OASISCompiler
         public override Symbol.Types VisitAddSub([NotNull] OASISGrammarParser.AddSubContext context)
         {
             if (context.op.Type == OASISGrammarParser.ADD)
-                OutputCode(".byt SF_ADD",1);
+                OutputCode(".byt SF_ADD", 1);
             else
-                OutputCode(".byt SF_SUB",1);
+                OutputCode(".byt SF_SUB", 1);
 
             if ((context.expression(0) == null) || (Visit(context.expression(0)) != Symbol.Types.Byte))
                 Error("Left side of operation is not a number", context.start.Line, context.GetText());
@@ -406,16 +419,16 @@ namespace OASISCompiler
 
             if (sym == null)
             {
-               Error("Variable not found: " + context.GetText(), context.Start.Line, context.GetText());
-               return base.VisitAssignmentStatement(context);
+                Error("Variable not found: " + context.GetText(), context.Start.Line, context.GetText());
+                return base.VisitAssignmentStatement(context);
             }
 
-            if(sym.Type==Symbol.Types.Byte)
-                OutputCode(".byt SC_ASSIGN, "+EncodeNumber(sym.Address, out b) + "\t; " + context.GetText(), b+1);
+            if (sym.Type == Symbol.Types.Byte)
+                OutputCode(".byt SC_ASSIGN, " + EncodeNumber(sym.Address, out b) + "\t; " + context.GetText(), b + 1);
             else
                 OutputCode(".byt SC_SETFLAG, " + EncodeNumber(sym.Address, out b) + "\t; " + context.GetText(), b + 1);
 
-            if ((context.expression() == null)&&(context.logicalexpression()==null))
+            if ((context.expression() == null) && (context.logicalexpression() == null))
             {
                 Error("Invalid expression", context.start.Line, context.GetText());
                 return Symbol.Types.None;
@@ -430,7 +443,7 @@ namespace OASISCompiler
 
             if (sym.Type != rt)
             {
-                Error("Inconsistent types: " + context.GetText(), context.Start.Line,context.GetText());
+                Error("Inconsistent types: " + context.GetText(), context.Start.Line, context.GetText());
                 return base.VisitAssignmentStatement(context);
             }
 
@@ -447,7 +460,7 @@ namespace OASISCompiler
                 codeLabels.Add(name, false);
 
             OutputCode(".byt SC_JUMP", 1);
-            OutputCode(".word (l_"+name+"-res_start)", 2);
+            OutputCode(".word (l_" + name + "-res_start)", 2);
 
             return Symbol.Types.None;
         }
@@ -457,7 +470,7 @@ namespace OASISCompiler
             OASISFunction f = theFunctions.resolve(context.IDENT().GetText());
             if (f == null)
             {
-                Error("Unknown function",context.Start.Line, context.GetText());
+                Error("Unknown function", context.Start.Line, context.GetText());
                 return Symbol.Types.None;
             }
 
@@ -472,7 +485,7 @@ namespace OASISCompiler
                     ni++;
                 }
             }
-            if (n!=f.nArguments)
+            if (n != f.nArguments)
             {
                 Error("Wrong number of arguments", context.Start.Line, context.GetText());
                 return f.returnType;
@@ -509,7 +522,7 @@ namespace OASISCompiler
             }
 
             // A function with that name exists... check parameters...
- 
+
             int n = 0; int ni = 0;
             if (context.argumentlist() != null)
             {
@@ -548,7 +561,7 @@ namespace OASISCompiler
         public override Symbol.Types VisitCommandCall([NotNull] OASISGrammarParser.CommandCallContext context)
         {
             /* And again very similar code, but could not group it all! */
-                
+
             OASISCommand c = theCommands.resolve(context.IDENT().GetText());
             if (c == null)
             {
@@ -556,8 +569,8 @@ namespace OASISCompiler
                 return Symbol.Types.None;
             }
 
- 
-            int n =0; int ni = 0;
+
+            int n = 0; int ni = 0;
             if (context.argumentlist() != null)
             {
                 while (context.argumentlist().GetChild(ni) != null)
@@ -583,7 +596,7 @@ namespace OASISCompiler
                 if (context.argumentlist().GetChild(i).GetText() == ",") continue;
 
 
-                if(c.paramList.ElementAt(n)==Symbol.Types.Word)
+                if (c.paramList.ElementAt(n) == Symbol.Types.Word)
                 {
                     bool b;
                     // The command wants a label here
@@ -599,7 +612,7 @@ namespace OASISCompiler
                     if (c.paramList.ElementAt(n) != t)
                         Error("Argument at position " + n + " has wrong type", context.Start.Line, context.GetText());
                 }
-               
+
                 n++;
             }
 
@@ -608,10 +621,10 @@ namespace OASISCompiler
 
         public override Symbol.Types VisitRelationalExpression([NotNull] OASISGrammarParser.RelationalExpressionContext context)
         {
-            
+
             switch (context.op.Type)
             {
-                case OASISGrammarParser.LT: OutputCode(".byt SF_LT",1); break;
+                case OASISGrammarParser.LT: OutputCode(".byt SF_LT", 1); break;
                 case OASISGrammarParser.LE: OutputCode(".byt SF_LE", 1); break;
                 case OASISGrammarParser.GT: OutputCode(".byt SF_GT", 1); break;
                 case OASISGrammarParser.GE: OutputCode(".byt SF_GE", 1); break;
@@ -657,18 +670,18 @@ namespace OASISCompiler
 
             if (sym == null)
             {
-               Error("Variable not found: " + context.GetText(), context.Start.Line, context.GetText());
+                Error("Variable not found: " + context.GetText(), context.Start.Line, context.GetText());
                 return base.VisitLIdentifier(context);
             }
 
-            if(sym.Type!=Symbol.Types.Bool)
+            if (sym.Type != Symbol.Types.Bool)
             {
                 Error("Variable is not boolean: " + context.GetText(), context.Start.Line, context.GetText());
                 return base.VisitLIdentifier(context);
             }
 
             int b;
-            OutputCode(".byt SF_GETFLAG," + EncodeNumber(sym.Address, out b) + "\t; " + context.GetText(),b+1);
+            OutputCode(".byt SF_GETFLAG," + EncodeNumber(sym.Address, out b) + "\t; " + context.GetText(), b + 1);
             base.VisitLIdentifier(context);
             return Symbol.Types.Bool;
         }
@@ -699,7 +712,7 @@ namespace OASISCompiler
 
             sizethenpart = byteOffset - tempOffset;
             generatedCode.RemoveRange(pos, generatedCode.Count() - pos);
- 
+
             byteOffset = tempOffset;
 
             if (context.statement(1) != null)
@@ -713,7 +726,7 @@ namespace OASISCompiler
             else
                 sizeelsepart = 0;
 
-            int tojump = 1+ sizethenpart + sizeconditional;
+            int tojump = 1 + sizethenpart + sizeconditional;
             if (tojump >= 64) tojump++;
             if (sizeelsepart != 0) tojump += 2;
 
@@ -723,7 +736,7 @@ namespace OASISCompiler
             if (tojump2 >= 64) tojump++;
 
             int b;
-            OutputCode(".byt "+EncodeNumber(tojump,out b),b);
+            OutputCode(".byt " + EncodeNumber(tojump, out b), b);
             OutputCode("; then part", 0);
             if (context.statement(0) == null)
                 Error("No statement found", context.start.Line, context.GetText());
@@ -731,13 +744,13 @@ namespace OASISCompiler
                 Visit(context.statement(0));
 
 
-            if (context.statement(1)!=null)
+            if (context.statement(1) != null)
             {
-                OutputCode(".byt SC_JUMP_REL, " + EncodeNumber(tojump2,out b),b+1);
+                OutputCode(".byt SC_JUMP_REL, " + EncodeNumber(tojump2, out b), b + 1);
                 OutputCode("; else part", 0);
                 Visit(context.statement(1));
             }
-            
+
             return Symbol.Types.None;
         }
 
@@ -754,12 +767,12 @@ namespace OASISCompiler
 
             int pos = generatedCode.Count();
             OutputCode("00,00", 2);
- 
+
             Visit(context.statement());
-           
+
             hi = Math.DivRem(tempOffset, 256, out lo);
             OutputCode("; end while", 0);
-            OutputCode(".byt SC_JUMP, " + lo+", "+hi+ "\t; jump to "+tempOffset, 3);
+            OutputCode(".byt SC_JUMP, " + lo + ", " + hi + "\t; jump to " + tempOffset, 3);
 
 
             generatedCode.RemoveAt(pos);
@@ -779,7 +792,7 @@ namespace OASISCompiler
             OutputCode(".byt SC_JUMP_IF", 1);
             Visit(context.logicalexpression());
             OutputCode(".word " + tempOffset, 2);
-            return Symbol.Types.None; 
+            return Symbol.Types.None;
         }
 
         public override Symbol.Types VisitForStatement([NotNull] OASISGrammarParser.ForStatementContext context)
@@ -811,7 +824,7 @@ namespace OASISCompiler
 
             hi = Math.DivRem(byteOffset, 256, out lo);
             generatedCode.RemoveAt(pos);
-            generatedCode.Insert(pos, ".word " +byteOffset);
+            generatedCode.Insert(pos, ".word " + byteOffset);
 
             return Symbol.Types.None;
         }
@@ -821,16 +834,16 @@ namespace OASISCompiler
         {
             switch (s)
             {
-                case "Give":    return "VERB_GIVE";
-                case "PickUp":  return "VERB_PICKUP";
-                case "Use":     return "VERB_USE";
-                case "Open":    return "VERB_OPEN";
-                case "LookAt":  return "VERB_LOOKAT";
-                case "Push":    return "VERB_PUSH";
-                case "Close":   return "VERB_CLOSE";
-                case "TalkTo":  return "VERB_TALKTO";
-                case "Pull":    return "VERB_PULL";
-                case "WalkTo":  return "VERB_WALKTO";
+                case "Give": return "VERB_GIVE";
+                case "PickUp": return "VERB_PICKUP";
+                case "Use": return "VERB_USE";
+                case "Open": return "VERB_OPEN";
+                case "LookAt": return "VERB_LOOKAT";
+                case "Push": return "VERB_PUSH";
+                case "Close": return "VERB_CLOSE";
+                case "TalkTo": return "VERB_TALKTO";
+                case "Pull": return "VERB_PULL";
+                case "WalkTo": return "VERB_WALKTO";
             }
             return null;
         }
@@ -848,7 +861,7 @@ namespace OASISCompiler
             OutputCode("", 0);
             OutputCode("; Object Code " + id, 0);
             OutputCode(".(", 0);
-            if(id>=200)
+            if (id >= 200)
                 OutputCode(".byt RESOURCE_OBJECTCODE|$80", 0);
             else
                 OutputCode(".byt RESOURCE_OBJECTCODE", 0);
@@ -878,11 +891,11 @@ namespace OASISCompiler
                 else
                 {
                     var vc = getVerbCode(entry.Key);
-                    if (vc!=null)
+                    if (vc != null)
                     {
-                        generatedCode.Insert(pos, ".byt " + vc + Environment.NewLine+".word (l_" + entry.Key+"-res_start)");
-                        pos ++;
-                        totalSize+=3;
+                        generatedCode.Insert(pos, ".byt " + vc + Environment.NewLine + ".word (l_" + entry.Key + "-res_start)");
+                        pos++;
+                        totalSize += 3;
                     }
                 }
             }
@@ -894,7 +907,7 @@ namespace OASISCompiler
             localSymbols.firstaddrB = 200;
             localSymbols.firstaddrL = 200;
 
-            return Symbol.Types.None; 
+            return Symbol.Types.None;
         }
 
 
@@ -908,7 +921,7 @@ namespace OASISCompiler
             byteOffset = 0;
 
             OutputCode("", 0);
-            OutputCode("; String pack "+id, 0);
+            OutputCode("; String pack " + id, 0);
             OutputCode(".(", 0);
             if (id >= 200)
                 OutputCode(".byt RESOURCE_STRING|$80", 0);
@@ -923,14 +936,14 @@ namespace OASISCompiler
             int i = 0;
             while (context.STRING(i) != null)
             {
-                OutputCode(".asc " + context.STRING(i).GetText()+",0 ; String "+i, 0);
+                OutputCode(".asc " + context.STRING(i).GetText() + ",0 ; String " + i, 0);
                 totalSize += context.STRING(i).GetText().Length + 1;
                 i++;
             }
             OutputCode("res_end", 0);
             OutputCode(".)", 0);
 
-            return Symbol.Types.None; 
+            return Symbol.Types.None;
         }
 
         public override Symbol.Types VisitDialogMain([NotNull] OASISGrammarParser.DialogMainContext context)
@@ -957,8 +970,8 @@ namespace OASISCompiler
             OutputCode("res_start", 0);
 
             // Stringpack and script id
-            OutputCode(".byt " + context.st.Text + "\t; Stringpack with options",1);
-            OutputCode(".byt " + context.s.Text + "\t; Script with response actions",1);
+            OutputCode(".byt " + context.st.Text + "\t; Stringpack with options", 1);
+            OutputCode(".byt " + context.s.Text + "\t; Script with response actions", 1);
 
             // Save current position and parse options
             pos = generatedCode.Count();
@@ -967,6 +980,22 @@ namespace OASISCompiler
 
             // Insert the list of active options ending in $ff and the list of word offsets
             // stored in the corresponding lists member variables
+
+            String s = ".byt ";
+            foreach (DlgEntry d in theDlgOptions)
+            {
+                s += (d.active ? "1" : "0") + ",";
+            }
+            s += "$ff";
+            OutputCode(s + "\t; Active flags", theDlgOptions.Count() + 1);
+
+            s = ".word ";
+            foreach (DlgEntry d in theDlgOptions)
+            {
+                s += "(l_" + d.labelOffset + "-script_" + context.s.Text + "_start),";
+            }
+            OutputCode(s.TrimEnd(',') + "\t; Jump labels", theDlgOptions.Count()*2);
+
 
             //generatedCode.Insert(pos, ".byt $ff ; End of response table");
             //totalSize++;
@@ -980,9 +1009,19 @@ namespace OASISCompiler
 
         public override Symbol.Types VisitDialogOption([NotNull] OASISGrammarParser.DialogOptionContext context)
         {
-            //return base.VisitDialogOption(context);
+            int option;
 
-            OutputCode("; One option here", 0);
+            DlgEntry newd;
+            //return base.VisitDialogOption(context);
+            // Add option to list. Check they are consecutive (need to keep Options from 0 to n)
+            if(!int.TryParse(context.o.Text, out option) || option>254)
+                Error("Invalid dialog option", context.Start.Line, context.o.Text);
+            if (option != theDlgOptions.Count)
+                Error("Missing dialog option or option out of order (should be consecutive and starting at 0)",context.Start.Line,context.GetText());
+            newd.active = (context.a.Text == "active");
+            newd.labelOffset = context.l.Text;
+            theDlgOptions.Add(newd);
+            
             return Symbol.Types.None;
         }
     }

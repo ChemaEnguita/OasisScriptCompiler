@@ -88,8 +88,8 @@ namespace OASISCompiler
 
               // SC_JUMP 52 and SC_JUMP_IF 53 are used by the compiler
 
-              { "scStartDialog", new OASISCommand{opCode="SC_CLEAR_ROOMAREA", nArguments=0, paramList= new List<Symbol.Types> { } } },
-              { "scEndDialog", new OASISCommand{opCode="SC_CLEAR_ROOMAREA", nArguments=0, paramList= new List<Symbol.Types> { } } },
+              { "scStartDialog", new OASISCommand{opCode="SC_START_DIALOG", nArguments=0, paramList= new List<Symbol.Types> { } } },
+              { "scEndDialog", new OASISCommand{opCode="SC_END_DIALOG", nArguments=0, paramList= new List<Symbol.Types> { } } },
               { "scLoadDialog", new OASISCommand{opCode="SC_LOAD_DIALOG", nArguments=1, paramList= new List<Symbol.Types> { Symbol.Types.Byte } } },
               { "scActivateDlgOption", new OASISCommand{opCode="SC_ACTIVATE_DLGOPT", nArguments=2, paramList= new List<Symbol.Types> { Symbol.Types.Byte, Symbol.Types.Bool } } },
   
