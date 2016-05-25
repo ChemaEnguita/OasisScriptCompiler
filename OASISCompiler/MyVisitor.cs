@@ -50,6 +50,7 @@ namespace OASISCompiler
          * a list of structures will do the job */
         public struct DlgEntry
         {
+            public String sentence;
             public String labelOffset;
             public bool active;
         };
@@ -950,10 +951,19 @@ namespace OASISCompiler
         {
             int id;
             int pos;
+            int stid;
+            int scid;
 
             // Check the id is valid
             if ((!int.TryParse(context.NUMBER(0).GetText(), out id)) || (id > 255))
                 Error("Invalid Object ID", context.Start.Line, context.GetText());
+
+            if ((!int.TryParse(context.st.Text, out stid)) || (stid > 255))
+                Error("Invalid Stringpack ID", context.Start.Line, context.GetText());
+
+            if ((!int.TryParse(context.s.Text, out scid)) || (scid > 255))
+                Error("Invalid Script ID", context.Start.Line, context.GetText());
+
 
             // Ouput header
             OutputCode("", 0);
@@ -969,9 +979,12 @@ namespace OASISCompiler
             OutputCode(".byt " + id);
             OutputCode("res_start", 0);
 
+            // Check if rest of ids are valid
+
+
             // Stringpack and script id
-            OutputCode(".byt " + context.st.Text + "\t; Stringpack with options", 1);
-            OutputCode(".byt " + context.s.Text + "\t; Script with response actions", 1);
+            OutputCode(".byt " + stid + "\t; Stringpack with options", 1);
+            OutputCode(".byt " + scid + "\t; Script with response actions", 1);
 
             // Save current position and parse options
             pos = generatedCode.Count();
@@ -996,12 +1009,32 @@ namespace OASISCompiler
             }
             OutputCode(s.TrimEnd(',') + "\t; Jump labels", theDlgOptions.Count()*2);
 
-
-            //generatedCode.Insert(pos, ".byt $ff ; End of response table");
-            //totalSize++;
-
             OutputCode("res_end", 0);
             OutputCode(".)", 0);
+
+            // Generate strtingpack associated resource
+            OutputCode("; String pack for dialog " + id, 0);
+            OutputCode(".(", 0);
+            if (stid >= 200)
+                OutputCode(".byt RESOURCE_STRING|$80", 0);
+            else
+                OutputCode(".byt RESOURCE_STRING", 0);
+
+            OutputCode(".word (res_end-res_start +4)", 0);
+
+            OutputCode(".byt " + stid);
+            OutputCode("res_start", 0);
+
+            int i = 0;
+            foreach(DlgEntry d in theDlgOptions)
+            {
+                OutputCode(".asc " + d.sentence + ",0 ; String " + i, 0);
+                totalSize += d.sentence.Length + 1;
+                i++;
+            }
+            OutputCode("res_end", 0);
+            OutputCode(".)", 0);
+
 
             return Symbol.Types.None;
 
@@ -1009,17 +1042,10 @@ namespace OASISCompiler
 
         public override Symbol.Types VisitDialogOption([NotNull] OASISGrammarParser.DialogOptionContext context)
         {
-            int option;
-
             DlgEntry newd;
-            //return base.VisitDialogOption(context);
-            // Add option to list. Check they are consecutive (need to keep Options from 0 to n)
-            if(!int.TryParse(context.o.Text, out option) || option>254)
-                Error("Invalid dialog option", context.Start.Line, context.o.Text);
-            if (option != theDlgOptions.Count)
-                Error("Missing dialog option or option out of order (should be consecutive and starting at 0)",context.Start.Line,context.GetText());
             newd.active = (context.a.Text == "active");
             newd.labelOffset = context.l.Text;
+            newd.sentence = context.o.Text;
             theDlgOptions.Add(newd);
             
             return Symbol.Types.None;

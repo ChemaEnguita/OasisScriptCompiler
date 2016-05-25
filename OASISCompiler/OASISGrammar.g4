@@ -25,7 +25,7 @@ dialogr: 'dialog' NUMBER ':' 'script' s=NUMBER 'stringpack' st=NUMBER '{' dlgopt
 	;
 
 dlgoption:
-	'option' o=NUMBER a=('active'|'inactive') '->' l=IDENT		#DialogOption
+	'option' o=STRING a=('active'|'inactive') '->' l=IDENT		#DialogOption
 	;
 
 stringpack: 'stringpack' NUMBER '{' STRING (';' STRING)* ';'? '}'	#StringpackMain
