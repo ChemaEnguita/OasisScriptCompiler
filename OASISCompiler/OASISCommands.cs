@@ -73,7 +73,7 @@ namespace OASISCompiler
               { "scPrint", new OASISCommand {opCode="SC_PRINT",nArguments=2, paramList= new List<Symbol.Types>{  Symbol.Types.Byte, Symbol.Types.Byte } } },
               { "scPrintAt", new OASISCommand {opCode="SC_PRINT_AT",nArguments=4, paramList= new List<Symbol.Types>{  Symbol.Types.Byte, Symbol.Types.Byte, Symbol.Types.Byte, Symbol.Types.Byte } } },
               { "scRedrawScreen", new OASISCommand{opCode="SC_REDRAW_SCREEN", nArguments=0, paramList= new List<Symbol.Types> { } } },
-              { "scSetPutInInventory", new OASISCommand {opCode="SC_PUT_IN_INVENTORY",nArguments=1, paramList= new List<Symbol.Types>{  Symbol.Types.Byte } } },
+              { "scPutInInventory", new OASISCommand {opCode="SC_PUT_IN_INVENTORY",nArguments=1, paramList= new List<Symbol.Types>{  Symbol.Types.Byte } } },
               { "scRemoveFromInventory", new OASISCommand {opCode="SC_REMOVE_FROM_INVENTORY",nArguments=1, paramList= new List<Symbol.Types>{  Symbol.Types.Byte } } },
               { "scLoadResource", new OASISCommand {opCode="SC_LOAD_RESOURCE",nArguments=2, paramList= new List<Symbol.Types>{  Symbol.Types.Byte, Symbol.Types.Byte } } },
               { "scNukeResource", new OASISCommand {opCode="SC_NUKE_RESOURCE",nArguments=2, paramList= new List<Symbol.Types>{  Symbol.Types.Byte, Symbol.Types.Byte } } },
