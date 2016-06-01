@@ -19,7 +19,7 @@ namespace OASISCompiler
         [DllImport("msvcrt.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
         public static extern int system(string command);
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             int UndefinedSymbols = 0;
             StreamReader inputStream = new StreamReader(Console.OpenStandardInput());
@@ -68,6 +68,8 @@ namespace OASISCompiler
 
             //system("PAUSE");
             inputStream.Close();
+
+            return (err.nErrors + visitor.nErrors + UndefinedSymbols);
         }
     }
 }
