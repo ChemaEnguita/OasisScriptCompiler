@@ -76,7 +76,7 @@ namespace OASISCompiler
               { "sfGetClosestActor", new OASISFunction {opCode="SF_GET_CLOSESTACTOR",  returnType=Symbol.Types.Byte, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
               { "sfGetDistance", new OASISFunction {opCode="SF_GET_DISTANCE",  returnType=Symbol.Types.Byte, nArguments=2, paramList= new List<Symbol.Types>{ Symbol.Types.Byte, Symbol.Types.Byte } } },
               { "sfGetObjectAt", new OASISFunction {opCode="SF_GET_OBJAT",  returnType=Symbol.Types.Byte, nArguments=2, paramList= new List<Symbol.Types>{ Symbol.Types.Byte, Symbol.Types.Byte } } },
-              { "sfISObjectInInventory", new OASISFunction {opCode="SF_IS_OBJINVENTORY",  returnType=Symbol.Types.Bool, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
+              { "sfIsObjectInInventory", new OASISFunction {opCode="SF_IS_OBJINVENTORY",  returnType=Symbol.Types.Bool, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
 
               { "sfGetCameraCol", new OASISFunction {opCode="SF_GET_CAMERACOL",  returnType=Symbol.Types.Byte, nArguments=0, paramList= new List<Symbol.Types>{ } } },
               { "sfGetCameraFollowing", new OASISFunction {opCode="SF_GET_CAMERAFOLLOWING",  returnType=Symbol.Types.Byte, nArguments=0, paramList= new List<Symbol.Types>{ } } },
