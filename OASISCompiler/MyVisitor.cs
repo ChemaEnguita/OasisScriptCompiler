@@ -667,7 +667,11 @@ namespace OASISCompiler
 
         public override Symbol.Types VisitLIdentifier([NotNull] OASISGrammarParser.LIdentifierContext context)
         {
+            /* An identifier was found, check if local first (would obscure global) */
             Symbol sym = localSymbols.resolve(context.GetText());
+            /* If a local one was not found, try to check for a global one */
+            if (sym == null)
+                sym = globalSymbols.resolve(context.GetText());
 
             if (sym == null)
             {
