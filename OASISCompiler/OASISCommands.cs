@@ -92,7 +92,11 @@ namespace OASISCompiler
               { "scEndDialog", new OASISCommand{opCode="SC_END_DIALOG", nArguments=0, paramList= new List<Symbol.Types> { } } },
               { "scLoadDialog", new OASISCommand{opCode="SC_LOAD_DIALOG", nArguments=1, paramList= new List<Symbol.Types> { Symbol.Types.Byte } } },
               { "scActivateDlgOption", new OASISCommand{opCode="SC_ACTIVATE_DLGOPT", nArguments=2, paramList= new List<Symbol.Types> { Symbol.Types.Byte, Symbol.Types.Bool } } },
-  
+
+              { "scFreezeScript", new OASISCommand{opCode="SC_FREEZE_SCRIPT", nArguments=2, paramList= new List<Symbol.Types> { Symbol.Types.Byte, Symbol.Types.Bool } } },
+              { "scFreezeAllScripts", new OASISCommand{opCode="SC_FREEZE_ALL_SCRIPTS", nArguments=1, paramList= new List<Symbol.Types> { Symbol.Types.Bool } } },
+              { "scTerminateScript", new OASISCommand{opCode="SC_TERMINATE_SCRIPT", nArguments=1, paramList= new List<Symbol.Types> { Symbol.Types.Byte } } },
+
 
           };
 
