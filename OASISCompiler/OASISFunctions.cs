@@ -53,7 +53,8 @@ namespace OASISCompiler
 
               { "sfGetEgo", new OASISFunction {opCode="SF_GET_EGO",  returnType=Symbol.Types.Byte, nArguments=0, paramList= new List<Symbol.Types>{ } } },
               { "sfGetTalking", new OASISFunction {opCode="SF_GET_TALKING",  returnType=Symbol.Types.Byte, nArguments=0, paramList= new List<Symbol.Types>{ } } },
-              { "sfGetRow", new OASISFunction {opCode="SF_GET_COL",  returnType=Symbol.Types.Byte, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
+              { "sfGetCol", new OASISFunction {opCode="SF_GET_COL",  returnType=Symbol.Types.Byte, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
+              { "sfGetRow", new OASISFunction {opCode="SF_GET_ROW",  returnType=Symbol.Types.Byte, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
               { "sfGetRoom", new OASISFunction {opCode="SF_GET_ROOM",  returnType=Symbol.Types.Byte, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
               { "sfGetWalkbox", new OASISFunction {opCode="SF_GET_WALKBOX",  returnType=Symbol.Types.Byte, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
               { "sfGetFacing", new OASISFunction {opCode="SF_GET_FACING",  returnType=Symbol.Types.Byte, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
