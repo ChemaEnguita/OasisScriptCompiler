@@ -958,6 +958,8 @@ namespace OASISCompiler
             int stid;
             int scid;
 
+            theDlgOptions.Clear();
+
             // Check the id is valid
             if ((!int.TryParse(context.NUMBER(0).GetText(), out id)) || (id > 255))
                 Error("Invalid Object ID", context.Start.Line, context.GetText());
