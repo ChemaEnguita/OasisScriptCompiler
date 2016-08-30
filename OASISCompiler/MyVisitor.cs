@@ -915,6 +915,27 @@ namespace OASISCompiler
             return Symbol.Types.None;
         }
 
+        protected string ProcessString(string s)
+        {
+            string res = string.Empty;
+
+            for (int i=0; i<s.Length; i++)
+            {
+                if (s[i] != '\\')
+                    res += s[i];
+                else
+                {
+                    res += "\",";
+                    for (i++; s[i] != ' ' && s[i] != 0; i++)
+                    {
+                        res += s[i];
+                    }
+                    res += ",\"";
+                }
+            }
+
+            return res;
+        }
 
         public override Symbol.Types VisitStringpackMain([NotNull] OASISGrammarParser.StringpackMainContext context)
         {
@@ -941,7 +962,7 @@ namespace OASISCompiler
             int i = 0;
             while (context.STRING(i) != null)
             {
-                OutputCode(".asc " + context.STRING(i).GetText() + ",0 ; String " + i, 0);
+                OutputCode(".asc " + ProcessString(context.STRING(i).GetText()) + ",0 ; String " + i, 0);
                 totalSize += context.STRING(i).GetText().Length + 1;
                 i++;
             }
