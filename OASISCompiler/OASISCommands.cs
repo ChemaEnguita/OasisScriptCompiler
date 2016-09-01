@@ -97,6 +97,7 @@ namespace OASISCompiler
               { "scFreezeAllScripts", new OASISCommand{opCode="SC_FREEZE_ALL_SCRIPTS", nArguments=1, paramList= new List<Symbol.Types> { Symbol.Types.Bool } } },
               { "scTerminateScript", new OASISCommand{opCode="SC_TERMINATE_SCRIPT", nArguments=1, paramList= new List<Symbol.Types> { Symbol.Types.Byte } } },
 
+              { "scFadeToBlack", new OASISCommand{opCode="SC_FADETOBLACK", nArguments=0, paramList= new List<Symbol.Types> { } } },
 
           };
 
