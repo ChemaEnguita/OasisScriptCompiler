@@ -99,6 +99,8 @@ namespace OASISCompiler
 
               { "scFadeToBlack", new OASISCommand{opCode="SC_FADETOBLACK", nArguments=0, paramList= new List<Symbol.Types> { } } },
 
+              { "scPlaySFX", new OASISCommand{opCode="SC_PLAYSFX", nArguments=1, paramList= new List<Symbol.Types> { Symbol.Types.Byte } } },
+
           };
 
         }
