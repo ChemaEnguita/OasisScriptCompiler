@@ -740,6 +740,9 @@ namespace OASISCompiler
 
             if (tojump2 >= 64) tojump++;
 
+            if (tojump2 > 127)
+                Error("Too big code for relative jump", context.start.Line, context.GetText());
+
             int b;
             OutputCode(".byt " + EncodeNumber(tojump, out b), b);
             OutputCode("; then part", 0);
@@ -752,6 +755,8 @@ namespace OASISCompiler
             if (context.statement(1) != null)
             {
                 OutputCode(".byt SC_JUMP_REL, " + EncodeNumber(tojump2, out b), b + 1);
+                if(tojump2>127)
+                    Error("Too big code for relative jump", context.start.Line, context.GetText());
                 OutputCode("; else part", 0);
                 Visit(context.statement(1));
             }
