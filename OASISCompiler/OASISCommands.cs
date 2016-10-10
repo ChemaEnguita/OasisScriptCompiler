@@ -101,6 +101,8 @@ namespace OASISCompiler
 
               { "scPlaySFX", new OASISCommand{opCode="SC_PLAYSFX", nArguments=1, paramList= new List<Symbol.Types> { Symbol.Types.Byte } } },
 
+              { "scStopCharacterAction", new OASISCommand{opCode="SC_STOPCHARACTION", nArguments=1, paramList= new List<Symbol.Types> { Symbol.Types.Byte } } },
+
           };
 
         }
