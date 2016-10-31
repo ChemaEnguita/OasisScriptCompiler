@@ -103,6 +103,10 @@ namespace OASISCompiler
 
               { "scStopCharacterAction", new OASISCommand{opCode="SC_STOPCHARACTION", nArguments=1, paramList= new List<Symbol.Types> { Symbol.Types.Byte } } },
 
+              { "scSave", new OASISCommand{opCode="SC_SAVEGAME", nArguments=0, paramList= new List<Symbol.Types> { } } },
+              { "scLoad", new OASISCommand{opCode="SC_LOADGAME", nArguments=0, paramList= new List<Symbol.Types> { } } },
+              { "scMenu", new OASISCommand{opCode="SC_MENU", nArguments=0, paramList= new List<Symbol.Types> { } } },
+
           };
 
         }
