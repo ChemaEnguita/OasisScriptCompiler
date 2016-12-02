@@ -102,6 +102,12 @@ namespace OASISCompiler
               { "scPlaySFX", new OASISCommand{opCode="SC_PLAYSFX", nArguments=1, paramList= new List<Symbol.Types> { Symbol.Types.Byte } } },
               { "scStopSFX", new OASISCommand{opCode="SC_STOPSFX", nArguments=1, paramList= new List<Symbol.Types> { Symbol.Types.Byte } } },
 
+              { "scStopCharacterAction", new OASISCommand{opCode="SC_STOPCHARACTION", nArguments=1, paramList= new List<Symbol.Types> { Symbol.Types.Byte } } },
+
+              { "scSave", new OASISCommand{opCode="SC_SAVEGAME", nArguments=0, paramList= new List<Symbol.Types> { } } },
+              { "scLoad", new OASISCommand{opCode="SC_LOADGAME", nArguments=0, paramList= new List<Symbol.Types> { } } },
+              { "scMenu", new OASISCommand{opCode="SC_MENU", nArguments=0, paramList= new List<Symbol.Types> { } } },
+
           };
 
         }
