@@ -107,6 +107,10 @@ namespace OASISCompiler
               { "scLoad", new OASISCommand{opCode="SC_LOADGAME", nArguments=0, paramList= new List<Symbol.Types> { } } },
               { "scMenu", new OASISCommand{opCode="SC_MENU", nArguments=0, paramList= new List<Symbol.Types> { } } },
 
+              { "scSetBWPalette", new OASISCommand{opCode="SC_BWPALETTE", nArguments=0, paramList= new List<Symbol.Types> { } } },
+              { "scSetRoomPalette", new OASISCommand{opCode="SC_ROOMPALETTE", nArguments=0, paramList= new List<Symbol.Types> { } } },
+
+
           };
 
         }
