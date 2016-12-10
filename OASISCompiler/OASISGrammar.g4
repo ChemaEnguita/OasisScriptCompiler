@@ -79,8 +79,8 @@ expression
 
 logicalexpression
 	: expression op=('>' | '>=' | '<' | '<=' | '==' | '!=') expression		# RelationalExpression
-	| logicalexpression op=('&&' | '||') logicalexpression					# AndOrLExpression
 	| '!' logicalexpression													# NotLExpression
+	| logicalexpression op=('&&' | '||') logicalexpression					# AndOrLExpression
     | '(' logicalexpression ')'												# LParens
 	| IDENT '(' argumentlist? ')'											# LFunctionCall
 	| IDENT																	# LIdentifier
