@@ -22,7 +22,7 @@ namespace OASISCompiler
         static int Main(string[] args)
         {
             int UndefinedSymbols = 0;
-            StreamReader inputStream = new StreamReader(Console.OpenStandardInput());
+            StreamReader inputStream = new StreamReader(Console.OpenStandardInput(), Encoding.Default);
             //string inputStream = "script 203{ bool t; byte a; byte b; byte c; a=3; t=true; t=false; t=a>1; if (t){ a=f1(a); b=f2();} else c=100; while (a!=7) { b=b+1; f3(a,b,c);} lab1: proc(); }";
             //string inputStream = "script 203{ byte a;if(true) a=2; if(true){a=1;} else {a=0;} }";
 

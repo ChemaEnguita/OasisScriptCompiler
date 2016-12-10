@@ -57,6 +57,9 @@ namespace OASISCompiler
 
         public List<DlgEntry> theDlgOptions;
 
+        /* A dictionary to keep codes for special character (Spanish) */
+        public Dictionary<char, int> SpanishCodes;
+
         // Constructor
         public MyVisitor() {
             /* Some basic initializaitons. Local symbols start at 200
@@ -81,6 +84,19 @@ namespace OASISCompiler
 
             theDlgOptions = new List<DlgEntry>();
             theDlgOptions.Clear();
+
+            // Init codes for characters in Spanish
+            SpanishCodes=new Dictionary<char, int>();
+
+            SpanishCodes.Add('ñ', (int)' ' + 3);
+            SpanishCodes.Add('Ñ', (int)' ' + 4);
+            SpanishCodes.Add('á', (int)'Z' + 1);
+            SpanishCodes.Add('é', (int)'Z' + 2);
+            SpanishCodes.Add('í', (int)'Z' + 3);
+            SpanishCodes.Add('ó', (int)'Z' + 4);
+            SpanishCodes.Add('ú', (int)'Z' + 5);
+            SpanishCodes.Add('¡', (int)'z' + 3);
+            SpanishCodes.Add('¿', (int)'z' + 4);
 
             // Output a header
             OutputCode(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
@@ -926,21 +942,52 @@ namespace OASISCompiler
 
             for (int i=0; i<s.Length; i++)
             {
-                if (s[i] != '\\')
-                    res += s[i];
-                else
+                switch (s[i])
                 {
-                    res += "\",";
-                    for (i++; s[i] != ' ' && s[i] != 0; i++)
-                    {
+                    case '\\':
+                        res += "\",";
+                        for (i++; s[i] != ' ' && s[i] != 0; i++)
+                            res += s[i];
+                        res += ",\"";
+                        break;
+
+                    case 'ñ':
+                    case 'Ñ':
+                    case 'á':
+                    case 'é':
+                    case 'í':
+                    case 'ó':
+                    case 'ú':
+                    case '¡':
+                    case '¿':
+                        res += "\",";
+                        res += SpanishCodes[s[i]];
+                        res += ",\"";
+                        break;
+
+                    default:
                         res += s[i];
-                    }
-                    res += ",\"";
+                        break;
                 }
             }
 
             return res;
         }
+
+        /*
+                        if (s[i] != '\\')
+                            res += s[i];
+                        else
+                        {
+                            res += "\",";
+                            for (i++; s[i] != ' ' && s[i] != 0; i++)
+                            {
+                                res += s[i];
+                            }
+                            res += ",\"";
+                        }
+        */
+
 
         public override Symbol.Types VisitStringpackMain([NotNull] OASISGrammarParser.StringpackMainContext context)
         {
