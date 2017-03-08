@@ -1107,8 +1107,9 @@ namespace OASISCompiler
             int i = 0;
             foreach(DlgEntry d in theDlgOptions)
             {
-                OutputCode(".asc " + d.sentence + ",0 ; String " + i, 0);
-                totalSize += d.sentence.Length + 1;
+                var ss = ProcessString(d.sentence);
+                OutputCode(".asc " + ss + ",0 ; String " + i, 0);
+                totalSize += ss.Length + 1;
                 i++;
             }
             OutputCode("res_end", 0);
