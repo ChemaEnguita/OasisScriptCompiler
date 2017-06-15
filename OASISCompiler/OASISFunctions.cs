@@ -71,7 +71,7 @@ namespace OASISCompiler
               { "sfGetSizeX", new OASISFunction {opCode="SF_GET_SIZEX",  returnType=Symbol.Types.Byte, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
               { "sfGetSizeY", new OASISFunction {opCode="SF_GET_SIZEY",  returnType=Symbol.Types.Byte, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
               { "sfGetAnimSpeed", new OASISFunction {opCode="SF_GET_ANIMSPEED",  returnType=Symbol.Types.Byte, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
-              { "sfGetIsActor", new OASISFunction {opCode="SF_IS_ACTOR",  returnType=Symbol.Types.Bool, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
+              { "sfIsActor", new OASISFunction {opCode="SF_IS_ACTOR",  returnType=Symbol.Types.Bool, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
               { "sfIsProp", new OASISFunction {opCode="SF_IS_PROP",  returnType=Symbol.Types.Bool, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
               { "sfIsNotMoving", new OASISFunction {opCode="SF_IS_NOTMOVING",  returnType=Symbol.Types.Bool, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
               { "sfGetClosestActor", new OASISFunction {opCode="SF_GET_CLOSESTACTOR",  returnType=Symbol.Types.Byte, nArguments=1, paramList= new List<Symbol.Types>{ Symbol.Types.Byte} } },
