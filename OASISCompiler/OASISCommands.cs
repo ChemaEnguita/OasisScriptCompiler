@@ -75,6 +75,8 @@ namespace OASISCompiler
               { "scRedrawScreen", new OASISCommand{opCode="SC_REDRAW_SCREEN", nArguments=0, paramList= new List<Symbol.Types> { } } },
               { "scPutInInventory", new OASISCommand {opCode="SC_PUT_IN_INVENTORY",nArguments=1, paramList= new List<Symbol.Types>{  Symbol.Types.Byte } } },
               { "scRemoveFromInventory", new OASISCommand {opCode="SC_REMOVE_FROM_INVENTORY",nArguments=1, paramList= new List<Symbol.Types>{  Symbol.Types.Byte } } },
+              { "scClearInventory", new OASISCommand{opCode="SC_CLEAR_INVENTORY", nArguments=0, paramList= new List<Symbol.Types> { } } },
+
               { "scLoadResource", new OASISCommand {opCode="SC_LOAD_RESOURCE",nArguments=2, paramList= new List<Symbol.Types>{  Symbol.Types.Byte, Symbol.Types.Byte } } },
               { "scNukeResource", new OASISCommand {opCode="SC_NUKE_RESOURCE",nArguments=2, paramList= new List<Symbol.Types>{  Symbol.Types.Byte, Symbol.Types.Byte } } },
               { "scLockResource", new OASISCommand {opCode="SC_LOCK_RESOURCE",nArguments=2, paramList= new List<Symbol.Types>{  Symbol.Types.Byte, Symbol.Types.Byte } } },
