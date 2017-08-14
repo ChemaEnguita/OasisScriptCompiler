@@ -756,7 +756,7 @@ namespace OASISCompiler
 
             if (tojump2 >= 64) tojump++;
 
-            if (tojump2 > 127)
+            if (tojump > 127)
                 Error("Too big code for relative jump", context.start.Line, context.GetText());
 
             int b;
