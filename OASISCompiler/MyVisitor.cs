@@ -108,7 +108,7 @@ namespace OASISCompiler
             SpanishCodes.Add('î', (int)'Z' + 4);
             SpanishCodes.Add('ô', (int)'Z' + 5);
             SpanishCodes.Add('û', (int)'z' + 3);
-            SpanishCodes.Add('Ù', (int)'z' + 4);
+            SpanishCodes.Add('ù', (int)'z' + 4);
 
 
 
@@ -985,7 +985,7 @@ namespace OASISCompiler
                     case 'î':
                     case 'ô':
                     case 'û':
-                    case 'Ù':
+                    case 'ù':
                         res += "\",";
                         res += SpanishCodes[s[i]];
                         res += ",\"";
