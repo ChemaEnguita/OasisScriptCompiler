@@ -101,7 +101,7 @@ namespace OASISCompiler
             // Codes for characters in French
             SpanishCodes.Add('â', (int)' ' + 3);
             SpanishCodes.Add('ç', (int)' ' + 4);
-            SpanishCodes.Add('à', (int)'Z' - 1);
+            SpanishCodes.Add('à', (int)'A' - 1);
             SpanishCodes.Add('è', (int)'Z' + 1);
             //SpanishCodes.Add('é', (int)'Z' + 2);
             SpanishCodes.Add('ê', (int)'Z' + 3);
